@@ -61,9 +61,9 @@ while running:
 
 
     text(f"Velocity = {str(car.velocity.x)}",screen,(255,255,255),100,100)
-    text(f"Acceration = {str(car.acceleration.x)}",screen,(255,255,255),800,100)
+    text(f"Acceration = {str(car.acceleration.x)}",screen,(255,255,255),600,100)
 
-    car.acceleration = Vector((mouse_x-car.position.x)/10000,(mouse_y-car.position.y)/10000)
+    car.acceleration = Vector((mouse_x-car.position.x)/3000,(mouse_y-car.position.y)/3000)
     car.update()
 
     pygame.display.flip()
