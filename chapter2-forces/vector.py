@@ -14,6 +14,7 @@ class Vector():
     def multi(self,scalar):
         self.x*=scalar
         self.y*=scalar
+
     def limit(self,maxi):
         if self.mag > maxi:
             self.mag = maxi

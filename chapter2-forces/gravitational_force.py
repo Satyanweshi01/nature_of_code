@@ -1,0 +1,88 @@
+import pygame
+import random
+
+
+from vector import Mover,Vector
+
+class Ball(Mover):
+    def __init__(self,screen,x,y,mass,size):
+        super().__init__(x,y)
+        self.screen = screen
+        self.color = (255,0,0)
+        self.size = size
+        self.mass = mass
+    def draw(self):
+        self.rect = pygame.Rect(self.position.x,self.position.y,self.size,self.size)
+        pygame.draw.rect(self.screen,self.color,self.rect)
+
+class Attractor(Ball):
+    def __init__(self,screen,x,y,mass,size):
+        super().__init__(screen,x,y,mass,size)
+        self.x = x
+        self.y = y
+        self.color= (0,255,255)
+        self.mass = mass
+    def attract(self,ball:Ball):
+        vecx = self.x - ball.position.x
+        vecy = self.y - ball.position.y
+        attract_force = Vector(vecx,vecy)
+        attract_force.mag_update()
+        distance = max(attract_force.mag,10)
+        strength = (self.mass*ball.mass)/(distance*distance)
+        attract_force.mag = strength/1000
+        ball.ap_force(attract_force)
+
+pygame.init()
+
+width, height = 1080, 720
+
+screen = pygame.display.set_mode((width,height))
+pygame.display.set_caption("Ball")
+
+clock = pygame.time.Clock()
+FPS = 60
+
+ball1 = Attractor(screen=screen,x=width/2,y=height/2,mass=100,size=1)
+ball2 = Ball(screen=screen,x=0,y=0,mass=10,size=1)
+ball3 = Ball(screen=screen,x=width,y=height,mass=30,size=1)
+ball4 = Ball(screen=screen,x=width,y=0,mass=50,size=1)
+
+
+running = True
+
+while running:
+    mouse_pos = pygame.mouse.get_pos()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+    #screen.fill("Black")
+
+
+    ball2.ap_forces = []
+    ball3.ap_forces = []
+    ball4.ap_forces = []
+
+    ball1.attract(ball2)
+    ball1.attract(ball3)
+    ball1.attract(ball4)
+
+
+
+
+    ball2.cal_acce()
+    ball3.cal_acce()
+    ball4.cal_acce()
+
+
+
+    #ball1.draw()
+    ball2.draw()
+    ball3.draw()
+    ball4.draw()
+
+    
+    pygame.display.flip()
+
+    clock.tick(FPS)
+
+pygame.quit()
