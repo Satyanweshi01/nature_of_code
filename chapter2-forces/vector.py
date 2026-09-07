@@ -1,4 +1,6 @@
 import math
+
+
 class Vector():
     def __init__(self,x,y):
         self.x = x
@@ -14,12 +16,23 @@ class Vector():
     def multi(self,scalar):
         self.x*=scalar
         self.y*=scalar
+    def div(self,scalar):
+        self.x/=scalar
+        self.y/=scalar
 
     def limit(self,maxi):
         if self.mag > maxi:
+            scale = maxi/self.mag
+            self.x*=scale
+            self.y*=scale
             self.mag = maxi
     def mag_update(self):
         self.mag = math.sqrt(self.x*self.x + self.y*self.y)
+        return self.mag
+    
+    def normalize(self):
+        if self.mag_update() == 0:
+            self.div(self.mag_update())
 
 class Mover():
     def __init__(self,x,y):

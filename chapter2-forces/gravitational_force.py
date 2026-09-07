@@ -1,14 +1,15 @@
 import pygame
 import random
 
-
 from vector import Mover,Vector
 
 class Ball(Mover):
     def __init__(self,screen,x,y,mass,size):
         super().__init__(x,y)
+        self.x = x
+        self.y = y
         self.screen = screen
-        self.color = (255,0,0)
+        self.color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
         self.size = size
         self.mass = mass
     def draw(self):
@@ -18,19 +19,17 @@ class Ball(Mover):
 class Attractor(Ball):
     def __init__(self,screen,x,y,mass,size):
         super().__init__(screen,x,y,mass,size)
-        self.x = x
-        self.y = y
         self.color= (0,255,255)
         self.mass = mass
     def attract(self,ball:Ball):
         vecx = self.x - ball.position.x
         vecy = self.y - ball.position.y
-        attract_force = Vector(vecx,vecy)
-        attract_force.mag_update()
-        distance = max(attract_force.mag,10)
-        strength = (self.mass*ball.mass)/(distance*distance)
-        attract_force.mag = strength/1000
-        ball.ap_force(attract_force)
+        direction = Vector(vecx,vecy)
+        dist = max(direction.mag,10)
+        direction.normalize()
+        force = (0.001 * self.mass * ball.mass)/(dist*dist)
+        force_vector = direction.multi(force)
+        ball.ap_force(direction)
 
 pygame.init()
 
@@ -42,10 +41,10 @@ pygame.display.set_caption("Ball")
 clock = pygame.time.Clock()
 FPS = 60
 
-ball1 = Attractor(screen=screen,x=width/2,y=height/2,mass=100,size=1)
-ball2 = Ball(screen=screen,x=0,y=0,mass=10,size=1)
-ball3 = Ball(screen=screen,x=width,y=height,mass=30,size=1)
-ball4 = Ball(screen=screen,x=width,y=0,mass=50,size=1)
+ball1 = Attractor(screen=screen,x=width/2,y=height/2,mass=100,size=100)
+ball2 = Ball(screen=screen,x=0,y=0,mass=10,size=20)
+ball3 = Ball(screen=screen,x=0,y=height,mass=30,size=40)
+ball4 = Ball(screen=screen,x=width,y=0,mass=50,size=60)
 
 
 running = True
@@ -55,7 +54,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    #screen.fill("Black")
+    screen.fill("Black")
 
 
     ball2.ap_forces = []
@@ -68,14 +67,13 @@ while running:
 
 
 
-
     ball2.cal_acce()
     ball3.cal_acce()
     ball4.cal_acce()
 
 
 
-    #ball1.draw()
+    ball1.draw()
     ball2.draw()
     ball3.draw()
     ball4.draw()
