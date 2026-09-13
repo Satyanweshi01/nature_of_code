@@ -57,6 +57,9 @@ class Mover():
     def update(self):
         self.velocity = Vectorcls.add(self.acceleration,self.velocity)
         self.position = Vectorcls.add(self.velocity,self.position)
+    def angle(self):
+        return math.atan(self.velocity.y/self.velocity.x) if self.velocity.x > 0 else 0
+
         
 class Body(Mover):
     def __init__(self,screen,x,y,mass,size):
@@ -64,6 +67,22 @@ class Body(Mover):
         self.screen = screen
         self.color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
         self.size = size
+        self.image = pygame.image.load("arrow.png")
+        self.image = pygame.transform.scale(self.image,(self.size,self.size))
+
     def draw(self):
         self.rect = pygame.Rect(self.position.x,self.position.y,self.size,self.size)
         pygame.draw.rect(self.screen,self.color,self.rect)
+
+    def draw2(self):
+        self.rect = pygame.Rect(self.position.x,self.position.y,self.size,self.size)
+        angle = self.angle()
+        rotated = pygame.transform.rotate(self.image, -math.degrees(angle))
+        rotated_rect = rotated.get_rect(center=self.rect.center)
+        self.screen.blit(rotated, rotated_rect)
+
+def text(string,screen, text_color, x, y):
+    font = pygame.font.SysFont("Arial", 30)
+    img = font.render(string, True, text_color)
+    screen.blit(img,(x,y))
+        
