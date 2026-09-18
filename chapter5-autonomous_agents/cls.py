@@ -35,8 +35,7 @@ class Vectorcls():
         return math.sqrt(self.x*self.x + self.y*self.y)
     
     def normalize(self):
-        if self.mag() != 0:
-            return Vectorcls.div(self,self.mag())
+        return Vectorcls.div(self,self.mag())
     
     def setMag(self,mag):
         vec = self.normalize()
@@ -64,7 +63,7 @@ class Mover():
         self.velocity = Vectorcls.add(self.acceleration,self.velocity)
         self.position = Vectorcls.add(self.velocity,self.position)
     def angle(self):
-        return math.atan(self.velocity.y/self.velocity.x) if self.velocity.x > 0 else 0
+        return math.atan2(self.velocity.y,self.velocity.x)
 
 #Autonomous agents
 class Vehicle(Mover):
@@ -74,7 +73,7 @@ class Vehicle(Mover):
         self.maxforce = maxforce
     
     def desired(self,target):
-        desired = Vectorcls.sub(target,self)
+        desired = Vectorcls.sub(target,self.position)
         return desired.setMag(self.maxspeed)
     def steering(self,target):
         desired = self.desired(target=target)
