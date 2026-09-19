@@ -80,13 +80,19 @@ class Vehicle(Mover):
         return Vectorcls.sub(desired,self.velocity)
 
     def seek(self,target):
-        self.ap_forces = []
         steering_force = self.steering(target)
         steering_force.limit(self.maxforce)
         self.ap_force(steering_force)
         self.cal_acce()
 
-
+    def deseek(self,target):
+        desired = Vectorcls.sub(target,self.position)
+        desired = desired.setMag(self.maxspeed)
+        desired = Vectorcls.multi(desired,-1)
+        steering_force =Vectorcls.sub(desired,self.velocity)
+        steering_force.limit(self.maxforce*1.5)
+        self.ap_force(steering_force)
+        self.cal_acce()
 
 class Body(Vehicle):
     def __init__(self,screen,x,y,mass,size,maxspeed,maxforce):
