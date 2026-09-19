@@ -9,18 +9,17 @@ pygame.init()
 width, height = 1080, 720
 
 screen = pygame.display.set_mode((width,height))
-pygame.display.set_caption("seeker vehicle")
+pygame.display.set_caption("wanderer vehicle")
 
 clock = pygame.time.Clock()
 FPS = 60
 
 box = Body(screen,540,350,40, 50, 0,0)
-repulsion_box = Body(screen,540,350,70, 100, 0,0)
-magnet = Body(screen, 0,0, 10, 100, 15,7)
-stopping_magnet = Body(screen, 0,0, 10, 100, 15,7)
+
+magnet = Body(screen, 0,0, 10, 100, 10,7)
+
 
 running = True
-angle = 0
 radius = 200
 while running:
     for event in pygame.event.get():
@@ -35,23 +34,14 @@ while running:
 
     screen.fill("Black")
     magnet.ap_forces = []#to avoid force accumulation 
-    stopping_magnet.ap_forces = []
-    hori_offset = radius*math.cos(angle)
-    centerx = 540
-    box.position.x = centerx + hori_offset
 
-    box.draw()
-    repulsion_box.draw()
-    magnet.seek(box.position)
-    magnet.deseek(repulsion_box.position)
-    stopping_magnet.arrive(box.position)
-    
+    print(magnet.position.x,magnet.position.y) 
+    magnet.wander()
 
     magnet.draw2()
-    stopping_magnet.draw2()
+
 
     pygame.display.flip()
-    angle += 0.01
     clock.tick(FPS)
 
 pygame.quit()

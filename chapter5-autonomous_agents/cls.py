@@ -75,6 +75,7 @@ class Vehicle(Mover):
     def desired(self,target):
         desired = Vectorcls.sub(target,self.position)
         return desired.setMag(self.maxspeed)
+
     def steering(self,target):
         desired = self.desired(target=target)
         return Vectorcls.sub(desired,self.velocity)
@@ -93,6 +94,30 @@ class Vehicle(Mover):
         steering_force.limit(self.maxforce*1.5)
         self.ap_force(steering_force)
         self.cal_acce()
+
+    def arrive(self,target):
+        desired = Vectorcls.sub(target,self.position)
+        d = desired.mag()
+        if d<100:
+            m = (d/100)*(self.maxspeed)
+        else:
+            m = self.maxspeed
+        desired = desired.setMag(m)
+        steering_force = Vectorcls.sub(desired,self.velocity)
+        steering_force.limit(self.maxforce)
+        self.ap_force(steering_force)
+        self.cal_acce()
+    
+    def wander(self):
+        fixed_dist = 20
+        future_position_x = random.choice([-self.position.x,self.position.x]) + fixed_dist
+        future_position_y = random.choice([-self.position.y,self.position.y]) + fixed_dist
+        radius = 100
+        hori_offset = radius*math.cos(random.random())
+        vertical_offset = radius*math.sin(random.random())
+        target = Vectorcls(future_position_x + hori_offset, future_position_y + vertical_offset)
+        self.seek(target)
+
 
 class Body(Vehicle):
     def __init__(self,screen,x,y,mass,size,maxspeed,maxforce):
