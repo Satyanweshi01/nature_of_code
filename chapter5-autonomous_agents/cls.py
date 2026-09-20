@@ -40,6 +40,11 @@ class Vectorcls():
     def setMag(self,mag):
         vec = self.normalize()
         return Vectorcls.multi(vec,mag)
+    
+    def dot(a:Vectorcls,b:Vectorcls):
+        angle = math.acos(((a.position.x * b.position.x)+(a.position.y*b.position.y))/a.mag()*b.mag())
+        return angle
+
 
 class Mover():
     def __init__(self,x,y,mass):
@@ -138,7 +143,6 @@ class Body(Vehicle):
         rotated = pygame.transform.rotate(self.image, -math.degrees(angle))
         rotated_rect = rotated.get_rect(center=self.rect.center)
         self.screen.blit(rotated, rotated_rect)
-
 
 def text(string,screen, text_color, x, y):
     font = pygame.font.SysFont("Arial", 30)
