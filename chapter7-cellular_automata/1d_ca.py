@@ -64,19 +64,18 @@ class CellSystem():
         self.curr_grid_1d, self.grid_1d = self.grid_1d, self.curr_grid_1d  
 
     def current_gen_print(self):
-
         self.current_gen_update()
         for i in range(self.mem_count):
-            print(self.curr_grid_1d[i].state.value,end=" ")   
+            print(self.grid_1d[i].state.value,end=" ")   
      
     def gen_print(self,gen_count):
-        # for i in self.grid_1d: # for gen 0 print
-        #     print(i.state.value,end=" ")
-        # print()
+        for i in self.grid_1d: # for gen 0 print
+            print(i.state.value,end=" ")
+        print()
         # for k in self.curr_grid_1d:
         #     print(k.state.value, end=" ")
         # print()
-        for j in range(gen_count):
+        for j in range(gen_count-1):
             self.current_gen_print()
             print()
 
