@@ -38,22 +38,28 @@ class CellSystem():
             elif i == self.mem_count-1:
                 self.curr_grid_1d[self.mem_count-1].state = self.grid_1d[i-1].state
             if i != 0 and i !=self.mem_count-1:
-                if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Alive:
-                    self.curr_grid_1d[i].state = State.Dead
-                if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Dead:
-                    self.curr_grid_1d[i].state = State.Alive
-                if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Alive:
-                    self.curr_grid_1d[i].state = State.Alive
-                if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Dead:
-                    self.curr_grid_1d[i].state = State.Dead
-                if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Alive:
-                    self.curr_grid_1d[i].state = State.Dead
-                if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Dead:
-                    self.curr_grid_1d[i].state = State.Alive   
-                if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Alive:
-                    self.curr_grid_1d[i].state = State.Alive  
-                if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Dead:
-                    self.curr_grid_1d[i].state = State.Dead 
+                # if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Alive:
+                #     self.curr_grid_1d[i].state = State.Dead
+                # if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Dead:
+                #     self.curr_grid_1d[i].state = State.Alive
+                # if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Alive:
+                #     self.curr_grid_1d[i].state = State.Alive
+                # if self.grid_1d[i].state == State.Alive and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Dead:
+                #     self.curr_grid_1d[i].state = State.Dead
+                # if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Alive:
+                #     self.curr_grid_1d[i].state = State.Dead
+                # if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Alive and self.grid_1d[i+1].state == State.Dead:
+                #     self.curr_grid_1d[i].state = State.Alive   
+                # if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Alive:
+                #     self.curr_grid_1d[i].state = State.Alive  
+                # if self.grid_1d[i].state == State.Dead and self.grid_1d[i-1].state == State.Dead and self.grid_1d[i+1].state == State.Dead:
+                #     self.curr_grid_1d[i].state = State.Dead 
+
+                ruleset = [State.Dead,State.Alive,State.Dead,State.Alive,State.Alive,State.Dead,State.Alive,State.Dead]
+                def binary_to_decimal(cellgrid,cellIndex):
+                    return cellgrid[cellIndex-1].state.value*(2**2)+ cellgrid[cellIndex].state.value*(2**1)+ cellgrid[cellIndex+1].state.value*(2**0)
+                index = binary_to_decimal(self.grid_1d,i)
+                self.curr_grid_1d[i].state = ruleset[index]
             
         self.curr_grid_1d, self.grid_1d = self.grid_1d, self.curr_grid_1d  
 
