@@ -46,7 +46,6 @@ while running:
     tree_gen.draw()
 
 
-
     pygame.display.flip()
     clock.tick(FPS)
 
