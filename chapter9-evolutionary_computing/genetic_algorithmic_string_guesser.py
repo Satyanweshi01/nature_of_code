@@ -13,6 +13,7 @@ class DNA():
             self.genes+= random.choice(self.wordPool)
         self.genelist = [i for i in self.genes]
 
+
     def crossover(parentA,parentB)->DNA:
         child = DNA(parentA.length)
 
@@ -53,6 +54,7 @@ class GA():
             d = DNA(len(target))
             print(d.genes)
             self.population.append(d)
+        self.numguess = 0
 
     def fitness_cal(self):
         for i in self.population: # this picks a element
@@ -89,6 +91,7 @@ class GA():
 
             child = DNA.crossover(parentA,parentB)
             child.mutate(self.mulationRate)
+            self.numguess += 1
             print(child.genes)
             if (child.genes == self.target):
                 return True
@@ -96,7 +99,10 @@ class GA():
             childpopulation.append(child)
         self.population = childpopulation
 
-target = "my life my choice" # class input
+
+
+
+target = input("Enter the string to guess: ")
 population = []
 populationSize = 100
 mulationRate = 0.01
@@ -111,5 +117,6 @@ while evolution:
     flag = ga.selection()
     if flag:
         evolution = False
+print(f"Number of reproduction needed: {ga.numguess}")
 
     
