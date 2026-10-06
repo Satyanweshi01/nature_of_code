@@ -112,11 +112,10 @@ evolution = True
 i = 0
 while evolution:
     i+=1
-    print(f"generation {i}")
     ga.fitness_cal()
     flag = ga.selection()
     if flag:
         evolution = False
-print(f"Number of reproduction needed: {ga.numguess}")
+print(f"Number of reproduction needed: {ga.numguess}, generation {i}")
 
     
