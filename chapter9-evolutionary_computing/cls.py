@@ -3,20 +3,20 @@ import random
 import pygame
 
 class DNA():
-    def __init__(self,length):
+    def __init__(self,lifespan):
         self.genes = []
-        self.maxspeed = 0.1
-        self.length = length
-        for i in range(self.length):
+        self.maxspeed = 5
+        self.lifespan = lifespan
+        for i in range(self.lifespan):
             self.genes.append(Vectorcls.random2d())
             self.genes[i] = Vectorcls.multi(self.genes[i],random.choice([0,self.maxspeed]))
     
-    def crossover(parentA,parentB)->DNA:
-        child = Body(parentA.screen, parentA.x, parentA.y, parentA.mass, parentA.size, parentA.target, DNA(parentA.dna.length))
+    def crossover(parentA,parentB):
+        child = Body(parentA.screen, parentA.x, parentA.y, parentA.mass, parentA.size, parentA.target, DNA(parentA.dna.lifespan))
 
-        midpoint = random.randrange(0,child.dna.length)
+        midpoint = random.randrange(0,child.dna.lifespan)
 
-        for i in range(child.dna.length):
+        for i in range(child.dna.lifespan):
             if i<midpoint:
                 child.dna.genes[i] = parentA.dna.genes[i]
             else:
@@ -24,7 +24,7 @@ class DNA():
 
         return child
     def mutate(self,mutationRate):
-        for i in range(self.length):
+        for i in range(self.lifespan):
             if random.random() < mutationRate:
                 self.genes[i] = Vectorcls.random2d()
 
@@ -107,7 +107,6 @@ class Mover():
         for i in self.ap_forces:
             i = Vectorcls.div(i,self.mass)
             self.acceleration = Vectorcls.add(self.acceleration,i)
-        self.update()
     def ap_force(self,force:Vectorcls):
         if force not in self.ap_forces:
             self.ap_forces.append(force)
@@ -119,7 +118,7 @@ class Rockets(Mover):
     def __init__(self,x,y,mass,target,dna:DNA):
         super().__init__(x,y,mass)
         self.dna = dna
-        self.genecounter = 0 
+        self.movement_counter = 0 
         self.target = target
         self.fitness = 0
     def cal_fitness(self):
@@ -127,8 +126,8 @@ class Rockets(Mover):
         self.fitness = 1/(dist.mag()*dist.mag())
     def run(self):
         self.ap_forces = []
-        self.ap_force(self.dna.genes[self.genecounter])
-        self.genecounter += 1
+        self.ap_force(self.dna.genes[self.movement_counter])
+        self.movement_counter += 1
         self.cal_acce()
         self.update()
 
@@ -148,30 +147,39 @@ class Body(Rockets):
 
     def draw2(self):
         self.rect = pygame.Rect(self.position.x,self.position.y,self.size,self.size)
-        angle = Vectorcls(self.x,self.y).angle()
+        angle = self.velocity.angle()
         rotated = pygame.transform.rotate(self.image, -math.degrees(angle))
         rotated_rect = rotated.get_rect(center=self.rect.center)
         self.screen.blit(rotated, rotated_rect)
 
 
 class GA():
-    def __init__(self,target:Body,populationSize,mulationRate,length,screen):
+    def __init__(self,target:Body,populationSize,mulationRate,lifespan,screen):
         self.target = target
-        self.length = length
+        self.lifespan = lifespan
         self.screen = screen
         self.population = []
+        self.avg_fitness = 0
+        self.total_fitness = 0
+        self.gen = 0
         self.populationSize = populationSize
         self.mulationRate = mulationRate
         for i in range(self.populationSize): # creation of creatures # initialization
-            d = Body(self.screen,540,360,10,100,self.target, DNA(self.length)) 
+            d = Body(self.screen,540,360,10,100,self.target, DNA(self.lifespan)) 
             self.population.append(d)
 
+    def avg_fitness_update(self):
+        self.total_fitness = 0
+        for i in self.population:
+            self.total_fitness+=i.fitness
+        self.avg_fitness = self.total_fitness/self.populationSize
     def fitness_cal(self):
         for i in self.population: # this picks a element
             i.cal_fitness()
 
     def fitness_normalize(self):
         self.fitness_cal()
+        self.avg_fitness_update()
         total_fitness = 0
         for i in self.population:
             total_fitness+= i.fitness
@@ -179,6 +187,7 @@ class GA():
             j.fitness/=total_fitness
 
     def selection(self):
+        self.gen += 1
         self.fitness_normalize()
         childpopulation = []
         for i in range(self.populationSize):
@@ -200,8 +209,11 @@ class GA():
         for i in self.population:
             i.run()
             i.draw2()
+        if i.movement_counter >= len(i.dna.genes):
+                self.selection()
+                i.movement_counter = 0
 
 def text(string,screen, text_color, x, y):
-    font = pygame.font.SysFont("Arial", 30)
+    font = pygame.font.SysFont("Arial", 20)
     img = font.render(string, True, text_color)
     screen.blit(img,(x,y))
