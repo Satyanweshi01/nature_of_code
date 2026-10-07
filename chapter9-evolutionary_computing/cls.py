@@ -1,4 +1,33 @@
 import math
+import random
+import pygame
+
+class DNA():
+    def __init__(self,length):
+        self.genes = []
+        self.maxspeed = 0.1
+        self.length = length
+        for i in range(self.length):
+            self.genes.append(Vectorcls.random2d())
+            self.genes[i] = Vectorcls.multi(self.genes[i],random.choice([0,self.maxspeed]))
+    
+    def crossover(parentA,parentB)->DNA:
+        child = Body(parentA.screen, parentA.x, parentA.y, parentA.mass, parentA.size, parentA.target, DNA(parentA.dna.length))
+
+        midpoint = random.randrange(0,child.dna.length)
+
+        for i in range(child.dna.length):
+            if i<midpoint:
+                child.dna.genes[i] = parentA.dna.genes[i]
+            else:
+                child.dna.genes[i] = parentB.dna.genes[i]
+
+        return child
+    def mutate(self,mutationRate):
+        for i in range(self.length):
+            if random.random() < mutationRate:
+                self.genes[i] = Vectorcls.random2d()
+
 
 class Vectorcls():
     def __init__(self,x,y):
@@ -50,10 +79,18 @@ class Vectorcls():
         x = mag*math.cos(angle)
         y = mag*math.sin(angle)
         return Vectorcls(x,y)
+
     def rotate(a:Vectorcls,angle):
         curr_angle = a.angle()
         new_angle = curr_angle + angle
         return Vectorcls.setDir(a,new_angle)
+    
+    def random2d():
+        vec = Vectorcls(1,1)
+        angle = random.uniform(0,2*math.pi)
+        vec = Vectorcls.setDir(vec,angle)
+        vec.setMag(1)
+        return vec
 
 
 class Mover():
@@ -79,18 +116,26 @@ class Mover():
         self.position = Vectorcls.add(self.velocity,self.position)
 
 class Rockets(Mover):
-    def __init__(self,x,y,mass,target):
+    def __init__(self,x,y,mass,target,dna:DNA):
         super().__init__(x,y,mass)
+        self.dna = dna
+        self.genecounter = 0 
         self.target = target
         self.fitness = 0
     def cal_fitness(self):
-        dist = Vectorcls.sub(self.position,target.position)
-        self.fitness = 1/(dist.mag*dist.mag)
+        dist = Vectorcls.sub(self.position,self.target.position)
+        self.fitness = 1/(dist.mag()*dist.mag())
+    def run(self):
+        self.ap_forces = []
+        self.ap_force(self.dna.genes[self.genecounter])
+        self.genecounter += 1
+        self.cal_acce()
+        self.update()
 
 
 class Body(Rockets):
-    def __init__(self,screen,x,y,mass,size,target):
-        super().__init__(x,y,mass,target)
+    def __init__(self,screen,x,y,mass,size,target,dna:DNA):
+        super().__init__(x,y,mass,target,dna)
         self.screen = screen
         self.color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
         self.size = size
@@ -103,10 +148,58 @@ class Body(Rockets):
 
     def draw2(self):
         self.rect = pygame.Rect(self.position.x,self.position.y,self.size,self.size)
-        angle = self.angle()
+        angle = Vectorcls(self.x,self.y).angle()
         rotated = pygame.transform.rotate(self.image, -math.degrees(angle))
         rotated_rect = rotated.get_rect(center=self.rect.center)
         self.screen.blit(rotated, rotated_rect)
+
+
+class GA():
+    def __init__(self,target:Body,populationSize,mulationRate,length,screen):
+        self.target = target
+        self.length = length
+        self.screen = screen
+        self.population = []
+        self.populationSize = populationSize
+        self.mulationRate = mulationRate
+        for i in range(self.populationSize): # creation of creatures # initialization
+            d = Body(self.screen,540,360,10,100,self.target, DNA(self.length)) 
+            self.population.append(d)
+
+    def fitness_cal(self):
+        for i in self.population: # this picks a element
+            i.cal_fitness()
+
+    def fitness_normalize(self):
+        self.fitness_cal()
+        total_fitness = 0
+        for i in self.population:
+            total_fitness+= i.fitness
+        for j in self.population:
+            j.fitness/=total_fitness
+
+    def selection(self):
+        self.fitness_normalize()
+        childpopulation = []
+        for i in range(self.populationSize):
+            def randomParent():
+                while True:
+                    parent = random.choice(self.population)
+                    r2_num = random.random()
+                    if parent.fitness > r2_num:
+                        return parent
+            parentA = randomParent()
+            parentB = randomParent()
+
+            child = DNA.crossover(parentA,parentB)
+            child.dna.mutate(self.mulationRate)
+            childpopulation.append(child)
+        self.population = childpopulation
+
+    def live(self):
+        for i in self.population:
+            i.run()
+            i.draw2()
 
 def text(string,screen, text_color, x, y):
     font = pygame.font.SysFont("Arial", 30)
