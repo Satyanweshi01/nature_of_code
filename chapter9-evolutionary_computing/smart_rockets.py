@@ -15,7 +15,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 targeting_block = Body(screen,0,0,100,100,0,DNA(0))
-ga = GA(target=targeting_block,populationSize=50,mulationRate=0.2,lifespan=200,screen=screen)
+ga = GA(target=targeting_block,populationSize=100,mulationRate=0.1,lifespan=200,screen=screen)
 
 
 running = True

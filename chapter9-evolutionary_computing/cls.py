@@ -160,7 +160,6 @@ class GA():
         self.screen = screen
         self.population = []
         self.avg_fitness = 0
-        self.total_fitness = 0
         self.gen = 0
         self.populationSize = populationSize
         self.mulationRate = mulationRate
@@ -168,23 +167,20 @@ class GA():
             d = Body(self.screen,540,360,10,100,self.target, DNA(self.lifespan)) 
             self.population.append(d)
 
-    def avg_fitness_update(self):
-        self.total_fitness = 0
-        for i in self.population:
-            self.total_fitness+=i.fitness
-        self.avg_fitness = self.total_fitness/self.populationSize
     def fitness_cal(self):
         for i in self.population: # this picks a element
             i.cal_fitness()
 
     def fitness_normalize(self):
         self.fitness_cal()
-        self.avg_fitness_update()
         total_fitness = 0
+        total_fitness_normalized = 0
         for i in self.population:
             total_fitness+= i.fitness
         for j in self.population:
             j.fitness/=total_fitness
+            total_fitness_normalized+=j.fitness
+        self.avg_fitness = total_fitness/self.populationSize
 
     def selection(self):
         self.gen += 1
