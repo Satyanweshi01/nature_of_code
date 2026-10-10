@@ -52,7 +52,7 @@ Enter your choice: '''))
             
         elif gate_input == 2:
             perceptron1 = Perceptron(3)
-            for i in range(100): #training loop
+            for i in range(200): #training loop
                 #making or gate
                 perceptron1.train([0,0,1],0)
                 perceptron1.train([0,1,1],1)
