@@ -14,7 +14,7 @@ class Perceptron():
             summation+= input_arr[i]*self.weights[i]
         return self.activate(summation)
 
-    def activate(self,summation):
+    def activate(self,summation): #step function
         if summation>0:
             return 1
         else:
@@ -30,7 +30,7 @@ class Perceptron():
 if __name__ == "__main__":
     menu = True
     while menu:
-        perceptron1 = Perceptron(2)
+        
 
         try: gate_input = int(input('''What gate you want?
 Type 1 for AND
@@ -42,20 +42,22 @@ Enter your choice: '''))
             gate_input = "error"
 
         if gate_input == 1:
-            for i in range(100): #training loop
+            perceptron1 = Perceptron(3)
+            for i in range(200): #training loop
                 #making and gate
-                perceptron1.train([0,0],0)
-                perceptron1.train([0,1],0)
-                perceptron1.train([1,0],0)
-                perceptron1.train([1,1],1)
+                perceptron1.train([0,0,1],0) # input1,input2,bias
+                perceptron1.train([0,1,1],0)
+                perceptron1.train([1,0,1],0)
+                perceptron1.train([1,1,1],1)
             
         elif gate_input == 2:
+            perceptron1 = Perceptron(3)
             for i in range(100): #training loop
                 #making or gate
-                perceptron1.train([0,0],0)
-                perceptron1.train([0,1],1)
-                perceptron1.train([1,0],1)
-                perceptron1.train([1,1],1)
+                perceptron1.train([0,0,1],0)
+                perceptron1.train([0,1,1],1)
+                perceptron1.train([1,0,1],1)
+                perceptron1.train([1,1,1],1)
 
         elif gate_input == 3:
             menu = False
@@ -64,6 +66,7 @@ Enter your choice: '''))
             print("Invalid Input")
             continue
         print("Training is done")
+        print(f"Here is the weights of the perceptron: {perceptron1.weights}")
         submenu = True
         while submenu:
             input1 = (input("Enter input of A,B as list\nor type 'retrain' to train the perceptron again\ntype 'exit' to exit: "))
@@ -73,6 +76,7 @@ Enter your choice: '''))
                 quit()
             else:
                 input1 = eval(input1)
+                input1.append(1) # for bias as 1
                 output1 = perceptron1.feedForward(input_arr=input1)
                 print(f"Here is the Y: {output1}")
 
