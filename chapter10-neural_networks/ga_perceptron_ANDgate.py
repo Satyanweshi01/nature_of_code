@@ -49,10 +49,11 @@ class Perceptron():
             child.weights[weight] = choice([parentApart,parentBpart])
         return child
     def weight_mutate(self,mutationRate):
-        random_index = randrange(0,self.length)
-        #mutation
-        delta_weight = self.weights[random_index]*mutationRate
-        self.weights[random_index] = self.weights[random_index] + choice([delta_weight,-delta_weight])
+        if random() < mutationRate:
+            random_index = randrange(0,self.length)
+            #mutation
+            delta_weight = self.weights[random_index]*mutationRate
+            self.weights[random_index] = self.weights[random_index] + choice([delta_weight,-delta_weight])
 
 
 class GATrain():
@@ -61,6 +62,7 @@ class GATrain():
         self.mutationRate = mutationRate
         #initial generation
         self.population = []
+        self.gen = 0
         for i in range(self.populationSize):
             perceptron = Perceptron(3) # here two inputs and one bias
             self.population.append(perceptron)
@@ -68,6 +70,7 @@ class GATrain():
         for i in self.population:
             i.fitness_cal()
     def selection(self):
+        self.gen += 1
         self.populationFitness()
         childpopulation = []
         for i in range(self.populationSize):
@@ -86,7 +89,7 @@ class GATrain():
             #weight mutation
             child.weight_mutate(self.mutationRate)
             child.fitness_cal()
-            print(child.fitness)
+            #print(child.fitness)
             if child.fitness == 4:
                 return True,child #returning flag and the trained perceptron
             childpopulation.append(child)
@@ -104,6 +107,7 @@ if __name__ == "__main__":
         while training == False:
             training, perceptron1 = ga.selection()
         print("Genetic algorithmic training is done")
+        print(f"The generation: {ga.gen}")
         print(f"Here is the weights of the perceptron: {perceptron1.weights}")
         submenu = True
         while submenu:
