@@ -51,7 +51,7 @@ class CellBody(Cell):
             self.color = (255,255,255)
         pygame.draw.rect(self.screen,self.color,self.rect)
 
-        print(CellBody.left_x,CellBody.left_y,CellBody.width,CellBody.height)
+        #print(CellBody.left_x,CellBody.left_y,CellBody.width,CellBody.height)
         
 
     def posshift():
@@ -77,12 +77,17 @@ class CellSystem2d():
 
 
                 #condition to start the game and get blinker
-                if i == floor(mem_count/2) and j == floor(mem_count/2):
+                # if i == floor(mem_count/2) and j == floor(mem_count/2):
+                #     cell.state = State.Alive
+                # if i == floor(mem_count/2)+1 and j == floor(mem_count/2):
+                #     cell.state = State.Alive
+                # if i == floor(mem_count/2)-1 and j == floor(mem_count/2):
+                #     cell.state = State.Alive
+
+                # random noise alive (30% - 50% probability)
+                if random.random() < 0.30:
                     cell.state = State.Alive
-                if i == floor(mem_count/2)+1 and j == floor(mem_count/2):
-                    cell.state = State.Alive
-                if i == floor(mem_count/2)-1 and j == floor(mem_count/2):
-                    cell.state = State.Alive
+
                 row.append(cell)
             self.grid_2d.append(row)
         #filling up the initial current grid
